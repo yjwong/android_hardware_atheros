@@ -226,6 +226,15 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
 					  "Macaddr = " MACSTR "\n", MAC2STR(macaddr));
 	} else if (os_strcasecmp(cmd, "RELOAD") == 0) {
 		wpa_msg(drv->ctx, MSG_INFO, WPA_EVENT_DRIVER_STATE "HANGED");
+	} else if (os_strncmp(cmd, "GETBAND ", 8) == 0) {
+		wpa_printf(MSG_DEBUG, "%s: GETBAND not yet supported\n", __func__);
+		ret = 0;
+	} else if (os_strncasecmp(cmd, "SETBAND ", 8) == 0) {
+		wpa_printf(MSG_DEBUG, "%s: SETBAND not yet supported\n", __func__);
+		ret = 0;
+	} else if (os_strncasecmp(cmd, "SETSUSPENDOPT ", 14) == 0) {
+		wpa_printf(MSG_DEBUG, "%s: SETSUSPENDOPT not yet supported\n", __func__);
+		ret = 0;
 	} else if (os_strncasecmp(cmd, "POWERMODE ", 10) == 0) {
 		int state;
 
@@ -246,42 +255,35 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
 			wpa_driver_send_hang_msg(drv);
 		}
 	} else if(os_strcmp(cmd, "SCAN-ACTIVE") == 0) {
-		return 0; /* unsupported function */
+		wpa_printf(MSG_DEBUG, "%s: SCAN-ACTIVE not yet supported\n", __func__);
+		ret = 0;
 	} else if(os_strcmp(cmd, "SCAN-PASSIVE") == 0) {
-		return 0; /* unsupported function */
+		wpa_printf(MSG_DEBUG, "%s: SCAN-PASSIVE not yet supported\n", __func__);
+		ret = 0;
 	} else if(os_strncmp(cmd, "RXFILTER-ADD ", 13) == 0) {
-		return 0; /* Ignore it */
+		wpa_printf(MSG_DEBUG, "%s: RXFILTER-ADD not yet supported\n", __func__);
+		ret = 0;
 	} else if(os_strncmp(cmd, "RXFILTER-REMOVE ", 16) == 0) {
-		return 0; /* Ignore it */
+		wpa_printf(MSG_DEBUG, "%s: RXFILTER-REMOVE not yet supported\n", __func__);
+		ret = 0;
 	} else if(os_strncmp(cmd, "BTCOEXMODE ", 11) == 0) {
-                int mode;
-                if (sscanf(cmd, "%*s %d", &mode)==1) {
-                        /*
-                         * Android disable BT-COEX when obtaining dhcp packet except there is headset is connected
-                         * It enable the BT-COEX after dhcp process is finished
-                         * We ignore since we have our way to do bt-coex during dhcp obtaining.
-                         */
-                        switch (mode) {
-                        case 1: /* Disable*/
-                                break;
-                        case 0: /* Enable */
-                                /* fall through */
-                        case 2: /* Sense*/
-                                /* fall through */
-                        default:
-                                break;
-                        }
-                        return 0; /* ignore it */
-                }
-
+		wpa_printf(MSG_DEBUG, "%s: BTCOEXMODE not yet supported\n", __func__);
+		ret = 0;
+	} else if(os_strcmp(cmd, "BTCOEXSCAN-STOP") == 0) {
+		wpa_printf(MSG_DEBUG, "%s: BTCOEXSCAN-STOP not yet supported\n", __func__);
+		ret = 0;
+	} else if(os_strcmp(cmd, "BTCOEXSCAN-START") == 0) {
+		wpa_printf(MSG_DEBUG, "%s: BTCOEXSCAN-START not yet supported\n", __func__);
+		ret = 0;
 	} else if(os_strcmp(cmd, "RXFILTER-START") == 0) {
-		// STUB
-		return 0;
+		wpa_printf(MSG_DEBUG, "%s: RXFILTER-START not yet supported\n", __func__);
+		ret = 0;
 	} else if(os_strcmp(cmd, "RXFILTER-STOP") == 0) {
-		// STUB
-		return 0;
+		wpa_printf(MSG_DEBUG, "%s: RXFILTER-STOP not yet supported\n", __func__);
+		ret = 0;
 	} else { /* Use private command */
-		wpa_printf("MSG_ERROR", "%s: issuing private command %s\n", __func__, cmd);
+		wpa_printf(MSG_ERROR, "%s: private commands unsupported (command %s)\n", __func__, cmd);
+		/*
 		if (os_strcasecmp(cmd, "BGSCAN-START") == 0) {
 			ret = wpa_driver_set_backgroundscan_params(priv);
 			if (ret < 0) {
@@ -301,6 +303,7 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
 		priv_cmd.used_len = buf_len;
 		priv_cmd.total_len = buf_len;
 		ifr.ifr_data = &priv_cmd;
+		wpa_printf(MSG_ERROR, "%s: drv->ioctl_sock: %d", __func__, drv->ioctl_sock);
 
 		if ((ret = ioctl(drv->ioctl_sock, SIOCDEVPRIVATE + 1, &ifr)) < 0) {
 			wpa_printf(MSG_ERROR, "%s: failed to issue private commands\n", __func__);
@@ -316,6 +319,7 @@ int wpa_driver_nl80211_driver_cmd(void *priv, char *cmd, char *buf,
 
 			wpa_printf(MSG_DEBUG, "%s %s len = %d, %d", __func__, buf, ret, strlen(buf));
 		}
+		*/
 	}
 	return ret;
 }
